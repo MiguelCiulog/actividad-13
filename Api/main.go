@@ -15,18 +15,6 @@ import (
 func main() {
 	r := setupRouter()
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://foo.com"},
-		AllowMethods:     []string{"PUT", "PATCH"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://github.com"
-		},
-		MaxAge: 12 * time.Hour,
-	}))
-
 	cliente.InitializeConnectionDB()
 	r.Run(":8080")
 	cliente.CloseDBConnection()
@@ -34,6 +22,18 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "DELETE", "POST"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://github.com"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	// Get user by email
 	r.GET("/clientes/:email", func(c *gin.Context) {
@@ -61,7 +61,7 @@ func setupRouter() *gin.Engine {
 	})
 
 	// add
-	r.POST("/clientes/:email", func(c *gin.Context) {
+	r.POST("/clientes", func(c *gin.Context) {
 		email := c.Params.ByName("email")
 		var clienteRequest cliente.Cliente
 		clienteRequest.Email = email
@@ -80,12 +80,11 @@ func setupRouter() *gin.Engine {
 	// update
 	r.PUT("/clientes/:email", func(c *gin.Context) {
 		email := c.Params.ByName("email")
-		var clienteRequest cliente.Cliente
-		clienteRequest.Email = email
 
+		var clienteRequest cliente.Cliente
 		c.ShouldBind(&clienteRequest)
 
-		err := cliente.UpdateCliente(clienteRequest)
+		err := cliente.UpdateCliente(clienteRequest, email)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"Error": err})
 		}
@@ -109,23 +108,23 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-func _() {
-	cliente.InitializeConnectionDB()
-	// fmt.Println(cliente.GetAllCliente())
-	// fmt.Println(cliente.GetClienteByEmail("Email1"))
-	var cl cliente.Cliente
-	cl.Nombre = "Nombre2"
-	cl.Email = "Email2"
-	cl.FechaNacimiento = time.Now()
-	fmt.Println(cliente.AddCliente(cl))
-	fmt.Println(cliente.DeleteClienteByEmail("Email2"))
+// func _() {
+// 	cliente.InitializeConnectionDB()
+// 	// fmt.Println(cliente.GetAllCliente())
+// 	// fmt.Println(cliente.GetClienteByEmail("Email1"))
+// 	var cl cliente.Cliente
+// 	cl.Nombre = "Nombre2"
+// 	cl.Email = "Email2"
+// 	cl.FechaNacimiento = time.Now()
+// 	fmt.Println(cliente.AddCliente(cl))
+// 	fmt.Println(cliente.DeleteClienteByEmail("Email2"))
 
-	cl.Nombre = "Nombre1"
-	cl.Email = "Email1"
-	fmt.Println(cliente.AddCliente(cl))
+// 	cl.Nombre = "Nombre1"
+// 	cl.Email = "Email1"
+// 	fmt.Println(cliente.AddCliente(cl))
 
-	cl.Nombre = "nom"
-	fmt.Println(cliente.UpdateCliente(cl))
+// 	cl.Nombre = "nom"
+// 	fmt.Println(cliente.UpdateCliente(cl))
 
-	cliente.CloseDBConnection()
-}
+// 	cliente.CloseDBConnection()
+// }

@@ -109,14 +109,14 @@ func DeleteClienteByEmail(email string) error {
 	return err
 }
 
-func UpdateCliente(cliente Cliente) error {
+func UpdateCliente(cliente Cliente, email string) error {
 	sql := `UPDATE clientes SET
 		nombre = (?),
 		email = (?),
 		fecha_nacimiento = (?)
 		WHERE email = (?);`
 
-	_, err := db.Exec(sql, cliente.Nombre, cliente.Email, cliente.FechaNacimiento, cliente.Email)
+	_, err := db.Exec(sql, cliente.Nombre, email, cliente.FechaNacimiento, cliente.Email)
 
 	return err
 }

@@ -2,12 +2,16 @@ module github.com/MiguelCiulog/actividad-13
 
 go 1.18
 
-require github.com/go-sql-driver/mysql v1.6.0
+require (
+	github.com/gin-contrib/cors v1.3.1
+	github.com/gin-gonic/gin v1.7.7
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/gorilla/handlers v1.5.1
+)
 
 require (
-	github.com/gin-contrib/cors v1.3.1 // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.7.7 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
