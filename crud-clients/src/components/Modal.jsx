@@ -1,20 +1,21 @@
-
 import "./Components.css";
-import Close from "../img/close.svg"
+import Close from "../img/close.svg";
 import useClients from "../hooks/useClients";
 import { useNavigate } from "react-router-dom";
 
 const Modal = () => {
   let navigate = useNavigate();
-  const { handleOnChangeModal,handleSetCurrentClient } = useClients();
+  const { handleOnChangeModal, handleSetCurrentClient, handleDeleteClient } =
+    useClients();
   const handleToggle = () => {
     handleOnChangeModal();
     handleSetCurrentClient(null);
-  }
+  };
+
   const goToUpdate = () => {
     handleOnChangeModal();
     navigate("/update");
-  }
+  };
 
   return (
     <div className="modal-area">
@@ -24,12 +25,16 @@ const Modal = () => {
         </div>
         <h1>You want to do?</h1>
         <div className="modal-option">
-          <button className="delete">Delete</button>
-          <button className="update" onClick={goToUpdate}>Update</button>
+          <button className="delete" onClick={() => handleDeleteClient()}>
+            Delete
+          </button>
+          <button className="update" onClick={goToUpdate}>
+            Update
+          </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

@@ -20,25 +20,76 @@ const ClientsProvider = ({ children }) => {
     try {
       const response = await axios.get("http://localhost:8080/clientes");
       const { data } = response;
-      setClients(data);
-    } catch (error) {}
+      const newData = data.map((clientItem) => {
+        const newClient = { ...clientItem };
+        const fecha = new Date(newClient.fechaNacimiento);
+        newClient.fechaNacimiento = fecha.toDateString();
+        return newClient;
+      });
+      setClients(newData);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const queryApiInsert = async (client) => {
     try {
-      client.fecha_nacimiento = new Date(client.fecha_nacimiento);
+      client.fechaNacimiento = new Date();
       const response = await axios.post(
         "http://localhost:8080/clientes",
         client
       );
+      const newClient = {
+        email: client.email,
+        fechaNacimiento: client.fechaNacimiento.toDateString(),
+        nombre: client.nombre,
+      };
+      setClients([newClient, ...clients]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      const { data } = response;
-      setClients([...clients, data]);
+  const queryApiDelete = async (clientDelete) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/clientes/${clientDelete.email}`
+      );
+      const newClients = clients.filter(
+        (clientItem) => clientItem.email !== clientDelete.email
+      );
+      setClients(newClients);
+      handleOnChangeModal();
     } catch (error) {}
+  };
+
+  const queryAPiUpdate = async (clientUpdate) => {
+    try {
+      clientUpdate.fechaNacimiento = new Date();
+      console.log(client.email);
+      console.log(clientUpdate.email);
+      const response = await axios.put(
+        `http://localhost:8080/clientes/${client.email}`,
+        clientUpdate
+      );
+
+      const newClients = clients.map((clientItem) =>
+        clientItem.email === client.email ? clientUpdate : clientItem
+      );
+      setClients(newClients);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleInsert = (client) => {
     queryApiInsert(client);
+  };
+  const handleDeleteClient = () => {
+    queryApiDelete(client);
+  };
+  const handleUpdateClient = (clientUpate) => {
+    queryAPiUpdate(clientUpate);
   };
 
   useEffect(() => {
@@ -54,6 +105,8 @@ const ClientsProvider = ({ children }) => {
         handleSetCurrentClient,
         handleOnChangeModal,
         handleInsert,
+        handleDeleteClient,
+        handleUpdateClient,
       }}
     >
       {children}

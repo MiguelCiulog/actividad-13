@@ -42,7 +42,6 @@ const FormAdd = () => {
           name="email"
           onChange={handleOnChange}
         />
-        <input type="date" name="fecha_nacimiento" onChange={handleOnChange} />
       </fieldset>
       <div className="inputSubmit">
         <Link to={"/"}>Cancel</Link>

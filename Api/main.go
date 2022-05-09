@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	cliente "github.com/MiguelCiulog/actividad-13/daos"
+	cliente "github.com/MiguelCiulog/actividad-13/Api/daos"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
@@ -35,6 +35,11 @@ func setupRouter() *gin.Engine {
 		MaxAge: 12 * time.Hour,
 	}))
 
+	// Get all
+	r.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+
 	// Get user by email
 	r.GET("/clientes/:email", func(c *gin.Context) {
 		email := c.Params.ByName("email")
@@ -42,6 +47,7 @@ func setupRouter() *gin.Engine {
 		clientes, err := cliente.GetClienteByEmail(email)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"Error": err})
+			return
 		}
 
 		c.JSON(http.StatusOK, clientes)
@@ -54,6 +60,7 @@ func setupRouter() *gin.Engine {
 		clientes, err := cliente.GetAllCliente()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"Error": err})
+			return
 		}
 
 		c.JSON(http.StatusOK, clientes)
@@ -72,6 +79,7 @@ func setupRouter() *gin.Engine {
 		// clientes, err := cliente.GetAllCliente()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"Error": err})
+			return
 		}
 
 		c.JSON(http.StatusOK, `Client was added succesfully.`)
@@ -87,6 +95,8 @@ func setupRouter() *gin.Engine {
 		err := cliente.UpdateCliente(clienteRequest, email)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"Error": err})
+			fmt.Printf(err.Error())
+			return
 		}
 
 		c.JSON(http.StatusOK, `Client was updated succesfully.`)
@@ -100,6 +110,7 @@ func setupRouter() *gin.Engine {
 		// clientes, err := cliente.GetAllCliente()
 		if err != nil {
 			c.JSON(http.StatusMethodNotAllowed, gin.H{"Error": err})
+			return
 		}
 
 		c.JSON(http.StatusAccepted, `Client was deleted succesfully.`)

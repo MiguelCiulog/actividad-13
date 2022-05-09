@@ -4,7 +4,7 @@ import "./Components.css";
 const Client = (props) => {
   const { client } = props;
   const { handleSetCurrentClient, handleOnChangeModal } = useClients();
-  let { nombre, email, fechaNacimiento } = client;
+  let { nombre, email } = client;
 
   const handleOnClick = () => {
     handleSetCurrentClient(client);
@@ -18,10 +18,6 @@ const Client = (props) => {
       </p>
       <p>
         Email: <span className="spanStyle">{email}</span>
-      </p>
-      <p>
-        Fecha de nacimiento:{" "}
-        <span className="spanStyle">{fechaNacimiento}</span>
       </p>
     </div>
   );

@@ -11,8 +11,7 @@ import (
 // TODO: Make migrations work
 const (
 	DBName    = "clientes_actividad131"
-	Migration = "CREATE DATABASE IF NOT EXISTS `clientes_actividad13`;\n" +
-		"CREATE TABLE if not exists `clientes_actividad13.clientes`\n" +
+	Migration = "CREATE TABLE if not exists clientes\n" +
 		"(`idclientes` INT NOT NULL AUTO_INCREMENT, " +
 		"`nombre` VARCHAR(45) NOT NULL, " +
 		"`email` VARCHAR(100) NULL, " +
@@ -35,18 +34,25 @@ func HelloWorld() {
 
 func InitializeConnectionDB() {
 	var err error
-	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/clientes_actividad13?parseTime=true")
+	db, err = sql.Open("mysql", "user:1234@tcp(host.docker.internal:3307)/clientes_actividad13?parseTime=true")
+	// db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/clientes_actividad13?parseTime=true")
 
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println(Migration)
-	// fmt.Println()
-	// _, err = db.Exec(Migration)
 
+	// err = db.Ping()
 	// if err != nil {
-	// 	fmt.Print(err.Error())
+	// 	panic(err)
 	// }
+
+	// fmt.Println("PINGED")
+	// fmt.Println(Migration)
+	_, err = db.Exec(Migration)
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func CloseDBConnection() {
@@ -110,13 +116,17 @@ func DeleteClienteByEmail(email string) error {
 }
 
 func UpdateCliente(cliente Cliente, email string) error {
-	sql := `UPDATE clientes SET
-		nombre = (?),
-		email = (?),
-		fecha_nacimiento = (?)
-		WHERE email = (?);`
+	sql := ` 
+	UPDATE clientes SET
+		nombre = ?,
+		email = ?,
+		fecha_nacimiento = ?
+		WHERE email = ?`
 
-	_, err := db.Exec(sql, cliente.Nombre, email, cliente.FechaNacimiento, cliente.Email)
+	// fmt.Printf(sql)
+	// fmt.Println()
+	// fmt.Println()
 
+	_, err := db.Exec(sql, cliente.Nombre, cliente.Email, cliente.FechaNacimiento, email)
 	return err
 }
